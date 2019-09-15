@@ -1,0 +1,106 @@
+package test1;
+
+class test_agent 
+{
+	public interface Print
+	{
+    public void commodity_name(String name);
+    public void commodity_price(Integer price);
+    }
+	public class Commodity implements Print
+	{
+		 @Override
+		 public void commodity_name(String name)
+		 {
+			 System.out.println("The name of commodity :is "+name);
+		 }
+		 public void commodity_price(Integer price)
+		 {
+			 System.out.println("The price of commodity :is "+price);
+		 }
+	}
+	public class CommodityProxy implements Print
+	{
+		private Commodity salesmen;
+		public CommodityProxy(Commodity salesmen2) 
+		{
+			
+			this.salesmen=salesmen2;
+		}
+
+		@Override
+		public void commodity_name(String name)
+		 {
+			 this.salesmen.commodity_name(name);
+//			 System.out.println("运行时间："+System.currentTimeMillis());
+		 }
+		 public void commodity_price(Integer price)
+		 {
+			 this.salesmen.commodity_price(price);
+//			 System.out.println("运行时间："+System.currentTimeMillis());
+		 }
+	}
+	
+		 public static void main(String[] args)
+		 {
+			 Commodity salesmen=new test_agent().new Commodity();
+			 CommodityProxy proxy=new test_agent().new CommodityProxy(salesmen);
+			  proxy.commodity_name("可乐");
+			  proxy.commodity_price(3);
+		 }
+}
+package test1;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+
+public class Dynamic_agent 
+{
+	public interface Print
+	{
+    public void commodity_name(String name);
+    public void commodity_price(Integer price);
+    }
+	public class Commodity implements Print
+	{
+		 public void commodity_name(String name)
+		 {
+			 System.out.println("The name of commodity :is "+name);
+		 }
+		 public void commodity_price(Integer price)
+		 {
+			 System.out.println("The price of commodity :is "+price);
+		 }
+	}
+	public class CommodityProxy implements InvocationHandler
+	{
+		private Object proxied;
+		public CommodityProxy(Object obj)
+		{
+	        this.proxied=obj;
+	    }
+		@Override
+		public Object invoke(Object proxy, Method method,Object[] args)throws Throwable
+		{
+			method.invoke(this.proxied, args);
+			System.out.println("12");
+			return null;
+		}
+	}
+	public void main(String args[])
+	{
+		Commodity commodity=new Commodity();
+		Print pr=(Print)Proxy.newProxyInstance(CommodityProxy.class.getClassLoader(),
+					new Class[] {CommodityProxy.class}, 
+					new CommodityProxy(commodity));
+		pr.commodity_name("可乐");
+		pr.commodity_price(3);
+	}
+}
+/*
+1、我觉得静态代理和动态代理的应用的原理方式基本是相同的，
+但是静态代理是需要在运行前指定代理类的对象，
+而动态代理就不用我们在编译过程就直接给定代理对象，
+我们可以在实现的过程中决定代理的对象，方便修改。
+ */
