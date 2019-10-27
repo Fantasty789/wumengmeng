@@ -1,0 +1,3 @@
+git add demo1
+git commit -m 'Thread'
+$ git push -u https://github.com/Fantasty789/wumengmeng.git master -f
